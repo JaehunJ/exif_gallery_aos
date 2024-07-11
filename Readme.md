@@ -3,8 +3,11 @@ Exif filter gallery
 flutter 버전의 AOS 버전
 https://github.com/JaehunJ/exif_filter_gallery/
 
-## 의존성
-Glide, Hilt, Flow, Jetpack Compose
+## 구조
+Multi-module, MVVM, Clean architecture
+
+## 라이브러리 의존성
+Glide, Hilt, Flow, Jetpack Compose, coil
 
 ## 요구조건
 1. 기본적으로 디바이스내 이미지를 표시한다.
@@ -16,7 +19,3 @@ Glide, Hilt, Flow, Jetpack Compose
 1. 만들어진 날짜 오름차순/내림차순
 2. 화각별 내림차순
 4. 기기 내림차순
-
-## 브랜치
-1. basic-state : flutter 기본 state관리 버전
-2. riverpod-state : riverpod라이브러리 버전
