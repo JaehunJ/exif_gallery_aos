@@ -42,14 +42,28 @@ android {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
+//        resources.excludes.apply {
+//            add("META-INF/LICENSE")
+//            add("META-INF/*.properties")
+//            add("META-INF/AL2.0")
+//            add("META-INF/LGPL2.1")
+//        }
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/gradle/incremental.annotation.processors"
+//            resources {
+//                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+//
+//
+//            }
         }
     }
 }
 
 dependencies {
     add("implementation", project(":presentation"))
+    add("implementation", project(":domain"))
+    add("implementation", project(":data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -71,4 +85,6 @@ dependencies {
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    implementation(libs.compose.accompanist.permission)
 }
