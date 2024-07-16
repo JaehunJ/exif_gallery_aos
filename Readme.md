@@ -1,4 +1,4 @@
-Exif filter gallery 
+Exif filter gallery (작업 중)
 =============
 flutter 버전의 AOS 버전
 https://github.com/JaehunJ/exif_filter_gallery/
