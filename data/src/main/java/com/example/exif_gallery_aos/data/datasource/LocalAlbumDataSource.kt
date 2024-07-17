@@ -43,7 +43,7 @@ class LocalAlbumDataSource @Inject constructor(private val contentResolver: Cont
                         if (cursorThumbnail.moveToFirst()) {
                             val thumbnailUri = cursorThumbnail.getString(cursorThumbnail.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
 
-                            list.add(AlbumEntity(albumName = albumName, albumPath = albumPath, firstImagePath = thumbnailUri))
+                            list.add(AlbumEntity(albumId = albumId, albumName = albumName, albumPath = albumPath, firstImagePath = thumbnailUri))
                             idList.add(albumId)
                         }
 

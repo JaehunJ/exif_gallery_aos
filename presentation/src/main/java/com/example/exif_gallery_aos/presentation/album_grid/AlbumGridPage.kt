@@ -3,6 +3,7 @@ package com.example.exif_gallery_aos.presentation.album_grid
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -57,7 +59,9 @@ fun AlbumGridPage(navController: NavController = rememberNavController(), viewMo
             .statusBarsPadding()
     ) {
         if (state.isLoading) {
-            CircularProgressIndicator()
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+                CircularProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
         } else {
             AlbumGridBody(list = state.list, onClickCard = { model ->
                 //navController.navigate("photo_list")
@@ -97,9 +101,9 @@ fun AlbumGridItem(data: AlbumModel, onClickCard: (AlbumModel) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewAlbumGridPage() {
-    AlbumGridBody(list = listOf(Dummy("test", "test", "test")), onClickCard = {
+    AlbumGridBody(list = listOf(Dummy(albumId = 0,"test", "test", "test")), onClickCard = {
 
     })
 }
 
-class Dummy(override val albumName: String, override val albumPath: String, override val firstImagePath: String) :AlbumModel
+class Dummy(override val albumId: Int, override val albumName: String, override val albumPath: String, override val firstImagePath: String) :AlbumModel

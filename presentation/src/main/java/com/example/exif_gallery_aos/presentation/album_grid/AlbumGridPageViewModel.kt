@@ -23,7 +23,7 @@ class AlbumGridPageViewModel @Inject constructor(private val getAlbumListUseCase
     fun getAlbumList() {
         viewModelScope.launch(Dispatchers.IO) {
             getAlbumListUseCase.invoke(null).collect {
-                _state.emit(AlbumGridPageState(list = it, isLoading = false))
+                _state.emit(_state.value.copy(list = it, isLoading = false))
             }
         }
     }
