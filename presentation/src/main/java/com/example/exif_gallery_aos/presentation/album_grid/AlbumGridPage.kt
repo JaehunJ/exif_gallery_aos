@@ -50,7 +50,7 @@ fun AlbumGridPage(navController: NavController = rememberNavController(), viewMo
         }
     }
 
-    Scaffold(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
@@ -97,5 +97,9 @@ fun AlbumGridItem(data: AlbumModel, onClickCard: (AlbumModel) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewAlbumGridPage() {
-//    AlbumGridBody()
+    AlbumGridBody(list = listOf(Dummy("test", "test", "test")), onClickCard = {
+
+    })
 }
+
+class Dummy(override val albumName: String, override val albumPath: String, override val firstImagePath: String) :AlbumModel

@@ -3,6 +3,7 @@ package com.example.exif_gallery_aos.data.di
 import android.content.ContentResolver
 import android.content.Context
 import com.example.exif_gallery_aos.data.datasource.LocalAlbumDataSource
+import com.example.exif_gallery_aos.data.datasource.LocalPhotoDataSource
 import com.example.exif_gallery_aos.data.repository.AlbumRepositoryImpl
 import com.example.exif_gallery_aos.data.repository.PhotoRepositoryImpl
 import com.example.exif_gallery_aos.domain.album.AlbumRepository
@@ -31,6 +32,10 @@ class DataStoreModule {
     @Provides
     @Singleton
     fun provideLocalAlbumDataSource(contentResolver: ContentResolver) = LocalAlbumDataSource(contentResolver)
+
+    @Provides
+    @Singleton
+    fun provideLocalPhotoDataSource(contentResolver: ContentResolver) = LocalPhotoDataSource(contentResolver)
 }
 
 @Module

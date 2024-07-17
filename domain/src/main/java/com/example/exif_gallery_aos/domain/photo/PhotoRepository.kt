@@ -1,5 +1,8 @@
 package com.example.exif_gallery_aos.domain.photo
 
-interface PhotoRepository{
+import kotlinx.coroutines.flow.Flow
 
+interface PhotoRepository {
+    fun getPhotoList(albumId: Int): Flow<List<PhotoModel>>
+    fun getPhoto(photoId: Int): Flow<PhotoModel>
 }
