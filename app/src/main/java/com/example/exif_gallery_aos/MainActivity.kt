@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
             Exif_gallery_aosTheme {
                 val permissionState = rememberMultiplePermissionsState(permissions = permissions.toList())

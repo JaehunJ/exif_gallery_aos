@@ -12,7 +12,7 @@ class LocalPhotoDataSource @Inject constructor(private val contentResolver: Cont
 
         val cursor = contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            arrayOf(MediaStore.Images.Media.DATA),
+            arrayOf(MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA),
             MediaStore.Images.Media.BUCKET_ID + "= ?",
             arrayOf(albumId.toString()),
             null,
@@ -27,6 +27,8 @@ class LocalPhotoDataSource @Inject constructor(private val contentResolver: Cont
             }
             cursor.close()
         }
+
+        emit(list)
     }
 
     fun getPhoto(photoId:Int) = flow<ImageEntity> {

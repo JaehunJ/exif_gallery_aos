@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,8 +23,10 @@ class AlbumGridPageViewModel @Inject constructor(private val getAlbumListUseCase
 
     fun getAlbumList() {
         viewModelScope.launch(Dispatchers.IO) {
-            getAlbumListUseCase.invoke(null).collect {
-                _state.emit(_state.value.copy(list = it, isLoading = false))
+            getAlbumListUseCase.invoke(null).collect {list->
+                _state.update { prev->
+                    prev.copy(list = list, isLoading = false)
+                }
             }
         }
     }
@@ -32,4 +35,4 @@ class AlbumGridPageViewModel @Inject constructor(private val getAlbumListUseCase
 /**
  * view state
  */
-data class AlbumGridPageState(val list: List<AlbumModel>, val isLoading: Boolean)
+data class AlbumGridPageState(var list: List<AlbumModel>, val isLoading: Boolean)

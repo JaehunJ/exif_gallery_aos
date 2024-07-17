@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.exif_gallery_aos.domain.album.AlbumModel
+import com.example.exif_gallery_aos.presentation.Page
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -46,7 +47,7 @@ fun AlbumGridPage(navController: NavController = rememberNavController(), viewMo
     /**
      * 처음 정보 불러오기
      */
-    LaunchedEffect(state) {
+    LaunchedEffect(state.list.isEmpty()) {
         if (state.list.isEmpty()) {
             viewModel.getAlbumList()
         }
@@ -55,16 +56,15 @@ fun AlbumGridPage(navController: NavController = rememberNavController(), viewMo
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.White)
             .statusBarsPadding()
     ) {
         if (state.isLoading) {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                CircularProgressIndicator(modifier = Modifier.fillMaxWidth())
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
         } else {
             AlbumGridBody(list = state.list, onClickCard = { model ->
-                //navController.navigate("photo_list")
+                navController.navigate(Page.PhotoGrid.route.name + "/${model.albumName}/${model.albumId}")
             })
         }
 
