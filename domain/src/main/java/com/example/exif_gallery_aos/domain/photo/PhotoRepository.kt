@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 interface PhotoRepository {
     fun getPhotoList(albumId: Int): Flow<List<PhotoModel>>
     fun getPhoto(photoId: Int): Flow<PhotoModel>
+    fun getPhotoExif(photoPath:String):Flow<ExifModel>
 }

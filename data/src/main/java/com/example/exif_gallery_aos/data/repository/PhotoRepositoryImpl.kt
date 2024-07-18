@@ -1,6 +1,7 @@
 package com.example.exif_gallery_aos.data.repository
 
 import com.example.exif_gallery_aos.data.datasource.LocalPhotoDataSource
+import com.example.exif_gallery_aos.domain.photo.ExifModel
 import com.example.exif_gallery_aos.domain.photo.PhotoModel
 import com.example.exif_gallery_aos.domain.photo.PhotoRepository
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +13,10 @@ class PhotoRepositoryImpl @Inject constructor(private val localPhotoDataSource: 
     }
 
     override fun getPhoto(photoId: Int): Flow<PhotoModel> {
-        TODO("Not yet implemented")
+        return localPhotoDataSource.getPhoto(photoId)
+    }
+
+    override fun getPhotoExif(photoPath: String): Flow<ExifModel> {
+        return localPhotoDataSource.getExif(path = photoPath)
     }
 }

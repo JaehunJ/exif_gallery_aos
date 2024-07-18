@@ -1,10 +1,8 @@
 package com.example.exif_gallery_aos.presentation.photo_grid
 
-import android.util.Log
-import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.exif_gallery_aos.domain.photo.ExifModel
+import com.example.exif_gallery_aos.domain.photo.GetPhotoExifUseCase
 import com.example.exif_gallery_aos.domain.photo.GetPhotoListUseCase
 import com.example.exif_gallery_aos.domain.photo.PhotoPresentationModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +15,10 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class PhotoGridPageViewModel @Inject constructor(private val getPhotoListUseCase: GetPhotoListUseCase) : ViewModel() {
+class PhotoGridPageViewModel @Inject constructor(
+    private val getPhotoListUseCase: GetPhotoListUseCase,
+    private val getPhotoExifUseCase: GetPhotoExifUseCase
+) : ViewModel() {
     private val _state =
         MutableStateFlow<PhotoGridPageState>(
             PhotoGridPageState(
@@ -50,30 +51,35 @@ class PhotoGridPageViewModel @Inject constructor(private val getPhotoListUseCase
         viewModelScope.launch(Dispatchers.IO) {
             val list = _state.value.list
 
-            list.forEachIndexed {iter, item->
-                val exif = ExifInterface(item.photoModel!!.photoPath)
+            list.forEachIndexed { iter, item ->
+                getPhotoExifUseCase.invoke(GetPhotoExifUseCase.Params(item.photoModel!!.photoPath)).collect {
+                    item.exifModel = it
 
-                var focalLength = exif.getAttribute(ExifInterface.TAG_FOCAL_LENGTH)?:""
-
-                if(focalLength.contains("/")){
-                    val split = focalLength.split("/")
-                    if(split.isNotEmpty()){
-                        focalLength = (split[0].toFloat()/split[1].toFloat()).toString()
+                    withContext(Dispatchers.Main) {
+                        _state.update {
+                            it.copy(exifCount = (iter + 1), isExifLoaded = iter == list.count() - 1)
+                        }
                     }
                 }
+            }
+        }
+    }
 
-                val exifInfo = ExifModel(
-                    model = "${exif.getAttribute(ExifInterface.TAG_MAKE)} ${exif.getAttribute(ExifInterface.TAG_MODEL)}",
-                    focalLength = focalLength,
-                    fnumber = exif.getAttribute(ExifInterface.TAG_F_NUMBER)?:"",
-                    date = exif.getAttribute(ExifInterface.TAG_DATETIME)?:"",
-                )
+    fun changeFilter(filter: Filter) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = state.value.list
 
-                item.exifModel = exifInfo
+            list.let {
+                val sortedlist = when (filter) {
+                    is Filter.DATE -> list.sortedBy { item -> item.exifModel!!.date }
+                    is Filter.EXIF_MODEL -> list.sortedBy { item -> item.exifModel!!.model }
+                    is Filter.EXIF_FOCAL_LENGTH -> list.sortedBy { item -> item.exifModel!!.focalLength }
+                    is Filter.EXIF_F_NUMBER -> list.sortedBy { item -> item.exifModel!!.fnumber }
+                }
 
                 withContext(Dispatchers.Main) {
                     _state.update {
-                        it.copy(exifCount = (iter+1), isExifLoaded = iter == list.count() - 1)
+                        it.copy(sortedlist, filter = filter)
                     }
                 }
             }
@@ -82,7 +88,13 @@ class PhotoGridPageViewModel @Inject constructor(private val getPhotoListUseCase
 
 }
 
-data class PhotoGridPageState(val list: List<PhotoPresentationModel>, val filter: Filter, val isLoading: Boolean, val exifCount: Int, val isExifLoaded: Boolean)
+data class PhotoGridPageState(
+    val list: List<PhotoPresentationModel>,
+    val filter: Filter,
+    val isLoading: Boolean,
+    val exifCount: Int,
+    val isExifLoaded: Boolean
+)
 
 sealed class Filter {
     object DATE : Filter()

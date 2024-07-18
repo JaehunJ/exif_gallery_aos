@@ -30,7 +30,7 @@ class LocalAlbumDataSource @Inject constructor(private val contentResolver: Cont
                 val albumName = cursorFolder.getString(cursorFolder.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME))
                 val albumPath = cursorFolder.getString(cursorFolder.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
 
-                if(!idList.contains(albumId)){
+                if(!idList.contains(albumId) && !albumName.lowercase().contains("download")){
                     val cursorThumbnail = contentResolver.query(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         arrayOf(MediaStore.Images.Media.DATA),

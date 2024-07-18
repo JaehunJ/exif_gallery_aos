@@ -17,3 +17,9 @@ class GetPhotoUseCase @Inject constructor(private val photoRepository: PhotoRepo
 
     override fun execute(params: Params) = photoRepository.getPhoto(params.photoId)
 }
+
+class GetPhotoExifUseCase @Inject constructor(private val photoRepository: PhotoRepository):BaseFlowUseCase<GetPhotoExifUseCase.Params, ExifModel>(){
+    data class Params(val path:String)
+
+    override fun execute(params: Params) = photoRepository.getPhotoExif(params.path)
+}

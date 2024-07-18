@@ -40,8 +40,10 @@ fun ExifGalleryAppScreen() {
                     albumId = it.arguments?.getInt("albumId") ?: 0
                 )
             }
-            composable(Page.ImageView.route.name + "/{photoPath}", arguments = listOf()) {
-                ImageViewPage(navController = navController)
+            composable(Page.ImageView.route.name + "/{photoId}", arguments = listOf(
+                navArgument("photoId"){type = NavType.IntType}
+            )) {
+                ImageViewPage(navController = navController, photoId = it.arguments?.getInt("photoId") ?: 0)
             }
         }
     }

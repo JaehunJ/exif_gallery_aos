@@ -17,4 +17,8 @@ object PhotoUseCaseProvider {
     @Provides
     @Singleton
     fun provideGetPhotoUseCase(photoRepository: PhotoRepository) = GetPhotoUseCase(photoRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetPhotoExifUseCase(photoRepository: PhotoRepository) = GetPhotoExifUseCase(photoRepository)
 }
