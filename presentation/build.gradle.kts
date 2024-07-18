@@ -66,4 +66,12 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    //test
+    //mock testing
+    testImplementation("io.mockk:mockk:1.13.5")
+    androidTestImplementation("io.mockk:mockk-android:1.13.5")
+
+    //coroutine Testing
+    testImplementation(libs.kotlinx.coroutines.test)
 }
