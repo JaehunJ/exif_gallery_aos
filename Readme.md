@@ -9,14 +9,13 @@ Multi-module, MVVM, Clean architecture
 ## 라이브러리 의존성
 Glide, Hilt, Flow, Jetpack Compose, coil
 
-## 모듈 의존성
-Data Layer -> Domain Layer <- Presentation Layer
-
-## 모듈 자세히
-1. App module: App entry point, permission management
-2. Data module: data source, repository impl, model impl
-3. Domain module: repository interface, model interface, usecase
-4. Presentation module: view, viewmodel, route
+## 프로젝트 구성
+|모듈 이름|의존성|기능|
+|------|---|---|
+|app|include(data, domain, presentation)| App entry point, permission management
+|data|inclue(domain)| data source, repository impl, model impl
+|domain|독립|repository interface, model interface, usecase
+|presentation|include(domain)|view, viewmodel, route
 
 ## 요구조건
 1. 기본적으로 디바이스내 이미지를 표시한다.
