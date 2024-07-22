@@ -18,7 +18,7 @@ class ImageViewPageViewModel @Inject constructor(
     private val getPhotoUseCase: GetPhotoUseCase,
     private val getPhotoExifUseCase: GetPhotoExifUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow<ImageViewState>(ImageViewState(null, null))
+    private val _state = MutableStateFlow<ImageViewState>(ImageViewState(null, null, isLoaded = false))
     val state = _state.asStateFlow()
 
     fun getPhoto(photoId: Int) {
@@ -26,7 +26,7 @@ class ImageViewPageViewModel @Inject constructor(
             getPhotoUseCase.invoke(GetPhotoUseCase.Params(photoId)).collect { model ->
                 getPhotoExifUseCase.invoke(params = GetPhotoExifUseCase.Params(model.photoPath)).collect { exif ->
                     _state.update {
-                        it.copy(photoModel = model, exifModel = exif)
+                        it.copy(photoModel = model, exifModel = exif, isLoaded = true)
                     }
                 }
             }
@@ -34,4 +34,4 @@ class ImageViewPageViewModel @Inject constructor(
     }
 }
 
-data class ImageViewState(val photoModel: PhotoModel?, val exifModel: ExifModel?)
+data class ImageViewState(val photoModel: PhotoModel?, val exifModel: ExifModel?, val isLoaded: Boolean = false)

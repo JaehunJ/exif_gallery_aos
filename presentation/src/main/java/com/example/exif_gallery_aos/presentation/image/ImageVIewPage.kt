@@ -1,5 +1,8 @@
 package com.example.exif_gallery_aos.presentation.image
 
+import android.content.ContentUris
+import android.content.Intent
+import android.provider.MediaStore
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +33,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -51,55 +56,81 @@ fun ImageViewPage(navController: NavController, viewModel: ImageViewPageViewMode
         viewModel.getPhoto(photoId)
     }
 
-    Surface(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.Black)) {
-        if (state.value.photoModel != null) {
-            AsyncImage(model = state.value.photoModel!!.photoPath, contentDescription = "")
-        } else {
-            Text(text = "Loading...")
-        }
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+        ImageViewBody(state = state.value)
     }
 }
 
 @Composable
 fun ImageViewBody(state: ImageViewState, isPreview: Boolean = LocalInspectionMode.current) {
+    val context = LocalContext.current
+
     Box(modifier = Modifier.fillMaxSize()) {
-        if (isPreview) {
-            PinchZoomImage(
-                modifier = Modifier.fillMaxSize(),
-                model = painterResource(id = R.drawable.baseline_menu_24),
-                contentDescription = "",
-                contentScale = ContentScale.FillWidth
-            )
+        if (!state.isLoaded) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
-            PinchZoomImage(
-                modifier = Modifier.fillMaxSize(),
-                model = state.photoModel!!.photoPath,
-                contentDescription = "",
-                contentScale = ContentScale.FillWidth
-            )
-        }
-        Row(modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(20.dp)) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(painter = painterResource(id = R.drawable.baseline_share_24), contentDescription = "", tint = Color.White)
+            if (isPreview) {
+                PinchZoomImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = painterResource(id = R.drawable.baseline_menu_24),
+                    contentDescription = "",
+                    contentScale = ContentScale.FillWidth
+                )
+            } else {
+                PinchZoomImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = state.photoModel!!.photoPath,
+                    contentDescription = "",
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(20.dp)
+            ) {
+                //event: share
+                IconButton(onClick = {
+                    state.photoModel?.let {
+                        val shareIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(
+                                Intent.EXTRA_STREAM,
+                                ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, it.photoId.toLong())
+                            )
+                            type = "image/*"
+                        }
+                        context.startActivity(Intent.createChooser(shareIntent, "Share Image"))
+                    }
+
+                }) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_share_24), contentDescription = "", tint = Color.White)
+                }
+            }
+
+            //exif info label
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0x22000000))
+            ) {
+                Text(text = "Exif Info", style = MaterialTheme.typography.titleLarge.copy(color = Color.White))
+                Text(text = "model: ${state.exifModel?.model ?: ""}", style = TextStyle(color = Color.White))
+                Text(text = "f-number: F ${state.exifModel?.fnumber ?: ""}", style = TextStyle(color = Color.White))
+                Text(text = "focal length: ${state.exifModel?.focalLength ?: ""} mm", style = TextStyle(color = Color.White))
             }
         }
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0x22000000))){
-            Text(text = "Exif Info", style = MaterialTheme.typography.titleLarge.copy(color = Color.White))
-            Text(text = "model ${state.exifModel?.model?:""}", style = TextStyle(color = Color.White))
-            Text(text = "f-number ${state.exifModel?.fnumber?:""}", style = TextStyle(color = Color.White))
-            Text(text = "focal length ${state.exifModel?.focalLength?:""}", style = TextStyle(color = Color.White))
-        }
 
-        Text(text = "asdasd", modifier = Modifier.align(Alignment.Center), style = TextStyle(color = Color.White))
     }
 }
 
+/**
+ * 핀치줌 이미지 뷰
+ */
 @Composable
 fun PinchZoomImage(
     model: Any?, modifier: Modifier = Modifier,
@@ -109,8 +140,8 @@ fun PinchZoomImage(
     colorFilter: ColorFilter? = null,
     contentDescription: String = "",
 ) {
-    val screenWidth = with(LocalDensity.current) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
-    val screenHeight = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+    val screenWidth = with(LocalDensity.current) { LocalConfiguration.current.screenWidthDp.dp.toPx() / 2f }
+    val screenHeight = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() / 2f }
 
     val scale = remember {
         mutableStateOf(1f)
